@@ -32,14 +32,13 @@ namespace shell {
             // display the text
             print(textToDisplay);
 
-            // get input
-            std::getline(std::cin,input);
+            std::getline(std::cin, input);
 
-            // if someone clicked ctrl + D exit
-            if (!std::getline(std::cin, input)) {
-                mIsRunning = false;
-                continue;
-            }
+            // if someone clicked ctrl + D exit else get inputs
+            // if (!std::getline(std::cin, input)) {
+            //     mIsRunning = false;
+            //     continue;
+            // }
 
             // exit the terminal
             if (input == "exitTerminal") {
@@ -59,7 +58,7 @@ namespace shell {
 
             // create a char pointer vector and gather all the args inside
             std::vector<char*> args;
-            args.reserve(arg_strings.size()); // reserve space for optimalisation
+            args.reserve(arg_strings.size()); // reserve space for optimization
             for (auto& str : arg_strings) {
                 args.push_back(str.data());
             }
