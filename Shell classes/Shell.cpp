@@ -3,7 +3,9 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <unistd.h>
 #include <utility>
+#include <filesystem>
 #include "CommandExec.h"
 
 namespace shell {
@@ -27,21 +29,24 @@ namespace shell {
             std::string input;
             input.reserve(2048);
 
-            textToDisplay.append("myShell>");
+            std::filesystem::path currentDirectory = std::filesystem::current_path();
+
+            if (currentDirectory.string() ==  "/") {
+                textToDisplay.append("Home - ");
+            }
+            else {
+                textToDisplay.append(currentDirectory.filename().string() + " - ");
+            }
+
+            textToDisplay.append("myShell> ");
 
             // display the text
             print(textToDisplay);
 
             std::getline(std::cin, input);
 
-            // if someone clicked ctrl + D exit else get inputs
-            // if (!std::getline(std::cin, input)) {
-            //     mIsRunning = false;
-            //     continue;
-            // }
-
             // exit the terminal
-            if (input == "exitTerminal") {
+            if (input == "exit") {
                 mIsRunning = false;
                 continue;
             }
@@ -56,6 +61,13 @@ namespace shell {
                 arg_strings.push_back(segment);
             }
 
+            // check for no input
+            if (arg_strings.empty()) {
+                print("nothing to do\n");
+                textToDisplay.clear();
+                continue;
+            }
+
             // create a char pointer vector and gather all the args inside
             std::vector<char*> args;
             args.reserve(arg_strings.size()); // reserve space for optimization
@@ -66,8 +78,36 @@ namespace shell {
             // add a null pointer for the execvp
             args.push_back(nullptr);
 
+            // goto logic instead of cd
+            if (arg_strings[0] == "goto") {
+                if (arg_strings.size() == 1) {
+                    chdir(std::getenv("HOME")); // a home directory
+                }
+                else {
+                    const std::string& directory = arg_strings[1];
+                    std::filesystem::path path(directory);
+
+                    if ( std::filesystem::exists(path)) {
+                        if (std::filesystem::is_directory(path)) {
+                            chdir(path.string().c_str());
+                        }
+                        else {
+                            print("this is a file not a directory \n");
+                        }
+                    }
+                    else {
+                        print("there is no directory like that\n");
+                    }
+                }
+            }
+            else if (arg_strings[0] == "cd") {
+                print("try using goto instead of cd\n");
+            }
+            else if (arg_strings[0] == "fullpath") {
+                print(currentDirectory.string() + "\n");
+            }
             // if there are arguments execute command
-            if (!arg_strings.empty()) {
+            else if (!arg_strings.empty()) {
                 CommandExec::execute(args[0], args.data());
             }
 
