@@ -9,4 +9,5 @@ add_executable(Custom_shell main.cpp
         "Shell classes/CommandExec.cpp"
         "Shell classes/CommandExec.h"
         Structures/ExecutionResult.h
+        "Shell classes/TerminalGuard.hpp"
 )

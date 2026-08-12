@@ -7,10 +7,9 @@
 namespace shell {
     class CommandExec {
     public:
-        static ExecutionResult execute(char *command, char **args);
+        static ExecutionResult execute(const char *command, char **args);
 
     private:
-        static pid_t createChildProcess();
     };
 } // shell
 
